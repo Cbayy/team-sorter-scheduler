@@ -134,25 +134,16 @@ def writeData(array, sheet, workbook, filename):
     
     array.sort(key = lambda student: student.team)
     
-    x = 0
     n = 0
     for s in range(len(array)):
-        print(str(array[s].team) + " : " +  str(x))
-        if(array[s].team != x):
+
+        if(array[s].team != n):
             sheet.cell(row=s+2+n, column=7).value = ""
             sheet.cell(row=s+2+n, column=8).value = ""
-            x = x + 1
             n = n + 1
-            print("NE")
         sheet.cell(row=s+2+n, column =7).value = array[s].name
         sheet.cell(row=s+2+n, column =8).value = array[s].team + 1
             
-
-
-
-     
-    
-
 def writeTotalData(teamScore, sheet, workbook):
     sheet.cell(row=1,column=10).value = "Team number"
     sheet.cell(row=1,column=11).value = "Total score"
