@@ -18,7 +18,7 @@ def main():
     sheet = workbook.active
     array = getCells(sheet, workbook)
 
-    groupNum = sendMessage(array)
+    groupNum = askGroupNum(array)
     genderedSort = determineGender()
     sortedArray = runSorter(genderedSort, array, groupNum)
     teamScore = calculateScores(sortedArray, groupNum)
@@ -28,6 +28,7 @@ def main():
     workbook.save(filename)
     endProcess(filename)
 
+#Launches the Tkinter file diaglog
 def browseFiles(): 
     filename = filedialog.askopenfilename(initialdir = "/Desktop/", 
                                           title = "Select a File", 
@@ -36,6 +37,7 @@ def browseFiles():
     window.destroy()
     return filename
 
+#Returns an array of students for the inputted file
 def getCells(sheet, workbook):
     array = []
     clearCells(100, sheet)
@@ -50,7 +52,8 @@ def getCells(sheet, workbook):
         else:
             break
     return array
-    
+ 
+#Clears any previous calculations completed on the file   
 def clearCells(array, sheet):
     for s in range(array):
         sheet.cell(row=s+2, column=7).value = None
@@ -61,7 +64,9 @@ def clearCells(array, sheet):
         sheet.cell(row=g+2, column = 10).value = None
         sheet.cell(row=g+2, column = 11).value = None
 
-def sendMessage(array):
+#Prints out a suitable number of groups based on class size (would leave no leftover students)
+#Asks user to enter desired number of groups
+def askGroupNum(array):
     print("The number of student in this class: " + str(len(array)))
     print("Suitable # of groups: ")
     for n in range(int(len(array))):
@@ -72,10 +77,12 @@ def sendMessage(array):
     print("Confirmed")
     return groupNum
 
+#Asks user to enter if students should be sorted additionally gender
 def determineGender():
     genderedSort = input("Sort by gender [Y/N] (warning: teams are less likely to be even by score): ")
     return genderedSort
 
+#Runs a sorters based on the user's answer
 def runSorter(genderedSort, array, groupNum):
     if(genderedSort == "N"):
         array = sortStudents(array, groupNum)
@@ -83,6 +90,7 @@ def runSorter(genderedSort, array, groupNum):
         array = sortStudentsGender(array, groupNum)
     return array
 
+#Assigns a team to each student based on number of groups
 def sortStudents(array, groupNum):
     array = sorted(array, key=lambda student: student.score)
     g = 0
@@ -105,12 +113,14 @@ def sortStudents(array, groupNum):
                 g = g - 1
     return array
 
+#Function not complete, need to assign all M to groups than assign all F to groups using the sortStudents method individually on both genders
 def sortStudentsGender(array, groupNum):
     array.sorted(array, key=lambda student: student.gender)
     for s in range(len(array)):
         array[s].team = s
     return array
 
+#For each group, add total of student's scores
 def calculateScores(array, groupNum):
     teamScore = []
     for x in range(int(groupNum)):
@@ -122,6 +132,7 @@ def calculateScores(array, groupNum):
                 teamScore[g] = teamScore[g] + array[s].score
     return teamScore
          
+#Writes each student and their assigned team to the excel file         
 def writeData(array, sheet, workbook, filename):
     sheet.cell(row=1,column=7).value = "Name"
     sheet.cell(row=1,column=8).value = "Team"
@@ -137,7 +148,8 @@ def writeData(array, sheet, workbook, filename):
             n = n + 1
         sheet.cell(row=s+2+n, column =7).value = array[s].name
         sheet.cell(row=s+2+n, column =8).value = array[s].team + 1
-            
+
+#Writes metadata (total score, more to come) to excel file for each group            
 def writeTotalData(teamScore, sheet, workbook):
     sheet.cell(row=1,column=10).value = "Team number"
     sheet.cell(row=1,column=11).value = "Total score"
@@ -146,6 +158,7 @@ def writeTotalData(teamScore, sheet, workbook):
         sheet.cell(row=g+2, column = 10).value = g + 1
         sheet.cell(row=g+2, column = 11).value = teamScore[g] 
 
+#Displays message and timer for application shutdown
 def endProcess(filename):
     print("\nProcessing finished. Additional data added to: "  + filename)
     for i in range(9, 0, -1):
@@ -153,6 +166,7 @@ def endProcess(filename):
         time.sleep(1)
     quit()
 
+#Tkinter window 
 window = Tk() 
 window.title('File Explorer') 
 window.geometry("700x200") 
