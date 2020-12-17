@@ -13,7 +13,20 @@ class Student:
         self.score = score
 
 def main():
-    browseFiles()
+    filename = browseFiles()
+    workbook = load_workbook(filename=filename)
+    sheet = workbook.active
+    array = getCells(sheet, workbook)
+
+    groupNum = sendMessage(array)
+    genderedSort = determineGender()
+    sortedArray = runSorter(genderedSort, array, groupNum)
+    teamScore = calculateScores(sortedArray, groupNum)
+
+    writeTotalData(teamScore, sheet, workbook)
+    writeData(array, sheet, workbook, filename)
+    workbook.save(filename)
+    endProcess(filename)
 
 def browseFiles(): 
     filename = filedialog.askopenfilename(initialdir = "/Desktop/", 
@@ -21,13 +34,9 @@ def browseFiles():
                                           filetypes = [("Excel file","*.xlsx"),("Excel file", "*.xls")])
     label_file_explorer.configure(text="File Opened: "+filename) 
     window.destroy()
-    getCells(filename)
-    
+    return filename
 
-
-def getCells(filename):
-    workbook = load_workbook(filename=filename)
-    sheet = workbook.active
+def getCells(sheet, workbook):
     array = []
     clearCells(100, sheet)
     for value in sheet.iter_rows(
@@ -39,22 +48,9 @@ def getCells(filename):
             temp = Student(value[0],value[1],value[2], value[3])
             array.append(temp)
         else:
-            print("EEE")
             break
+    return array
     
-    clearCells(len(array), sheet)
-    groupNum = sendMessage(array)
-    genderedSort = determineGender()
-    sortedArray = runSorter(genderedSort, array, groupNum)
-    
-    teamScore = calculateScores(sortedArray, groupNum)
-    
-    writeTotalData(teamScore, sheet, workbook)
-    writeData(array, sheet, workbook, filename)
-    workbook.save(filename)
-    endProcess(filename)
-    #write Data
-
 def clearCells(array, sheet):
     for s in range(array):
         sheet.cell(row=s+2, column=7).value = None
@@ -107,8 +103,6 @@ def sortStudents(array, groupNum):
             else:
                 array[s].team = g
                 g = g - 1
-    #teamScore = calculateScores(array, groupNum)
-    #return teamScore
     return array
 
 def sortStudentsGender(array, groupNum):
@@ -171,7 +165,7 @@ label_file_explorer = Label(window,
    
 button_explore = Button(window,  
                         text = "Browse Files", 
-                        command = browseFiles)  
+                        command = main)  
    
 button_exit = Button(window,  
                      text = "Exit", 
