@@ -3,6 +3,7 @@ import time
 import operator
 from tkinter import * 
 from tkinter import filedialog 
+from teamScheduler import *
 
 class Student:
     team = None
@@ -27,6 +28,7 @@ def main():
     writeData(array, sheet, workbook, filename)
     workbook.save(filename)
     endProcess(filename)
+    
 
 #Launches the Tkinter file diaglog
 def browseFiles(): 
