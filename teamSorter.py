@@ -24,6 +24,8 @@ def main():
     sortedArray = runSorter(genderedSort, array, groupNum)
     teamScore = calculateScores(sortedArray, groupNum)
 
+    schedule(int(groupNum))
+
     writeTotalData(teamScore, sheet, workbook)
     writeData(array, sheet, workbook, filename)
     workbook.save(filename)
